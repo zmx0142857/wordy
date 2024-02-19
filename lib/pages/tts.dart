@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import 'package:wordy/utils.dart';
 
 class TtsPage extends StatefulWidget {
   const TtsPage({super.key});
@@ -21,23 +21,19 @@ const _defaultLanguage = '';
 class _TtsPageState extends State<TtsPage> {
   bool _playing = false;
   String _text = '';
-  final FlutterTts _tts = FlutterTts();
   List<String> _languages = [];
   String _language = _defaultLanguage;
 
   _ttsSpeak() async {
     setState(() { _playing = true; });
-    if (_language.isNotEmpty) {
-      _tts.setLanguage(_language);
-    }
-    await _tts.speak(_text);
+    await TtsUtils.speak(_text, language: _language);
     setState(() { _playing = false; });
   }
 
   _initLanguages() async {
     _languages = [
       '',
-      ...(await _tts.getLanguages).map((lang) => lang.split('-').first).toSet().toList().cast<String>(),
+      ...(await TtsUtils.getLanguages()),
     ];
     setState(() {});
   }
