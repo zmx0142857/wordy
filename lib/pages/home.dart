@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../routes.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -7,16 +8,17 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('HomePage'),
+        title: const Text('Wordy Maya'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: ['/tts', '/counter'].map((name) {
-            return TextButton(
-              onPressed: () => Navigator.pushNamed(context, name),
-              child: Text(name),
+          children: routes.values.map((value) {
+            if (value.url == '/') return const SizedBox.shrink();
+            return ElevatedButton.icon(
+              icon: const Icon(Icons.arrow_right),
+              onPressed: () => Navigator.pushNamed(context, value.url),
+              label: Text(value.title),
             );
           }).toList(),
         ),

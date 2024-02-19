@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/counter.dart';
-import 'pages/tts.dart';
-import 'pages/home.dart';
+import 'package:wordy/routes.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -12,14 +10,14 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        appBarTheme: AppBarTheme(
+          elevation: 4.0,
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+        ),
         useMaterial3: true,
       ),
-      home: const TtsPage(),
-      routes: {
-        '/': (context) => const HomePage(),
-        '/counter': (context) => const CounterPage(),
-        '/tts': (context) => const TtsPage(),
-      }
+      routes: routes.map((key, value) => MapEntry(key, value.import)),
     );
   }
 }
