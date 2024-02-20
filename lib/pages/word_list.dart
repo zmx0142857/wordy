@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wordy/components/word_list.dart';
 import 'package:wordy/models/word.dart';
-import 'package:wordy/utils.dart';
+
+enum WordCategory {
+  faved, learned, todo, errors
+}
 
 class WordListPage extends StatefulWidget {
   const WordListPage({
@@ -15,20 +20,34 @@ class WordListPage extends StatefulWidget {
 }
 
 class _WordListPageState extends State<WordListPage> {
-  int _playingIndex = -1;
 
-  _speakWord(int index) async {
-    setState(() { _playingIndex = index; });
-    String text = widget.words[index].text;
-    await TtsUtils.speak(text);
-    setState(() { _playingIndex = -1; });
+  WordCategory _currentCategory = WordCategory.faved;
+
+  _segmentTextStyle(WordCategory category) {
+    return category == _currentCategory
+      ? TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.secondary)
+      : TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onInverseSurface);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('单词表'),
+        centerTitle: true,
+        title: CupertinoSlidingSegmentedControl<WordCategory>(
+          children: {
+            WordCategory.faved: Text('收藏', style: _segmentTextStyle(WordCategory.faved)),
+            WordCategory.learned: Text('已学', style: _segmentTextStyle(WordCategory.learned)),
+            WordCategory.todo: Text('未学', style: _segmentTextStyle(WordCategory.todo)),
+            WordCategory.errors: Text('易错', style: _segmentTextStyle(WordCategory.errors)),
+          },
+          groupValue: _currentCategory,
+          onValueChanged: (WordCategory? value) {
+            setState(() {
+              _currentCategory = value ?? WordCategory.faved;
+            });
+          },
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.search),
@@ -38,31 +57,8 @@ class _WordListPageState extends State<WordListPage> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: widget.words.length,
-        itemBuilder: (context, index) {
-          WordItem word = widget.words[index];
-          return ListTile(
-            title: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(word.text, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(width: 8.0),
-                Text('[${word.pronunciation}]', style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-              ],
-            ),
-            subtitle: Text(word.meaning, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-            trailing: IconButton(
-              icon: Icon(index == _playingIndex ? Icons.volume_up : Icons.volume_down),
-              onPressed: () {
-                _speakWord(index);
-              },
-            ),
-            onTap: () {
-              Navigator.pushNamed(context, '/word_detail', arguments: word);
-            },
-          );
-        },
+      body: WordListComponent(
+        words: widget.words
       ),
     );
   }

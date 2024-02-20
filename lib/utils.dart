@@ -8,6 +8,7 @@ class TtsUtils {
       await _tts.setLanguage(language);
     }
     if (text.isNotEmpty) {
+      await _tts.setPitch(.7);
       await _tts.speak(text);
     }
     if (sleep > 0) {
